@@ -37,6 +37,7 @@ export async function previewVoice({ voice, rate = "+0%", text } = {}) {
 
 export async function uploadVideo({
     file,
+    videoUrl,
     voice,
     rate = "+0%",
     language,
@@ -51,7 +52,11 @@ export async function uploadVideo({
     music,
 } = {}) {
     const fd = new FormData();
-    fd.append("file", file);
+    if (videoUrl) {
+        fd.append("videoUrl", videoUrl);
+    } else if (file) {
+        fd.append("file", file);
+    }
     fd.append("voice", voice);
     fd.append("rate", rate);
     fd.append("language", language);

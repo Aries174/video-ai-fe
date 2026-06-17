@@ -3,6 +3,7 @@ import { Upload, Download } from "lucide-react";
 
 export default function PreviewArea({
     videoUrl,
+    sourceVideoUrl,
     videoRef,
     aspectRatio,
     onMetadata,
@@ -332,6 +333,7 @@ export default function PreviewArea({
     })();
 
     const displayUrl = finalUrl || videoUrl;
+    const hasRemoteSourceUrl = !displayUrl && sourceVideoUrl;
 
     const subtitleBoxStyle =
         activeSub && contentRect && cfg
@@ -697,12 +699,33 @@ export default function PreviewArea({
                 >
                     <div style={{ textAlign: "center", cursor: "pointer" }}>
                         <Upload size={28} style={{ marginBottom: 10 }} />
-                        <div style={{ fontWeight: 600, color: "#dde2f0" }}>
-                            Click để upload video
-                        </div>
-                        <div style={{ marginTop: 6, fontSize: 12 }}>
-                            Định dạng: MP4 / MOV / WebM
-                        </div>
+                        {hasRemoteSourceUrl ? (
+                            <>
+                                <div style={{ fontWeight: 600, color: "#facc15" }}>
+                                    Link nguồn đã nhập, nhưng trình duyệt không phát preview gốc.
+                                </div>
+                                <div style={{ marginTop: 8, color: "#cbd5e1", fontSize: 13, maxWidth: 260, marginLeft: "auto", marginRight: "auto" }}>
+                                    Backend sẽ tải video từ URL này khi bạn nhấn "Lưu & Xuất video".
+                                </div>
+                                <a
+                                    href={sourceVideoUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    style={{ marginTop: 12, display: "inline-block", color: "#60a5fa", textDecoration: "underline" }}
+                                >
+                                    Mở link gốc
+                                </a>
+                            </>
+                        ) : (
+                            <>
+                                <div style={{ fontWeight: 600, color: "#dde2f0" }}>
+                                    Click để upload video
+                                </div>
+                                <div style={{ marginTop: 6, fontSize: 12 }}>
+                                    Định dạng: MP4 / MOV / WebM
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             )}

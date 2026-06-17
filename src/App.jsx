@@ -37,6 +37,7 @@ const POLL_INTERVAL_MS = 2000;
 export default function App() {
   // --- Files ---
   const [videoFile, setVideoFile] = useState(null);
+  const [sourceVideoUrl, setSourceVideoUrl] = useState("");
   const [logoFile, setLogoFile] = useState(null);
   const [musicFile, setMusicFile] = useState(null);
 
@@ -156,10 +157,35 @@ export default function App() {
   }, [jobId]);
 
   // ===== Handlers =====
+  const isDirectVideoUrl = (value) => {
+    if (!value) return false;
+    try {
+      const url = new URL(value.trim());
+      return /\.(mp4|mov|webm|ogg)$/i.test(url.pathname);
+    } catch {
+      return false;
+    }
+  };
+
   const handlePickVideo = (file) => {
     if (videoUrl?.startsWith("blob:")) URL.revokeObjectURL(videoUrl);
     setVideoFile(file);
+    setSourceVideoUrl("");
     setVideoUrl(URL.createObjectURL(file));
+    setVideoFilename("");
+    setSubtitles([]);
+    setSelectedSubIndex(0);
+    setFinalUrl("");
+    setJob(null);
+    setJobId("");
+  };
+
+  const handleSourceVideoUrlChange = (value) => {
+    const trimmed = value?.trim() || "";
+    setSourceVideoUrl(trimmed);
+    if (videoUrl?.startsWith("blob:")) URL.revokeObjectURL(videoUrl);
+    setVideoFile(null);
+    setVideoUrl(isDirectVideoUrl(trimmed) ? trimmed : "");
     setVideoFilename("");
     setSubtitles([]);
     setSelectedSubIndex(0);
@@ -239,8 +265,8 @@ export default function App() {
 
   // ===== Bước 1: upload + transcribe + dịch + TTS (KHÔNG burn-in subtitle) =====
   const handleExport = async () => {
-    if (!videoFile) {
-      alert("Vui lòng chọn video trước khi xuất.");
+    if (!videoFile && !sourceVideoUrl?.trim()) {
+      alert("Vui lòng chọn file video hoặc nhập video URL trước khi xuất.");
       return;
     }
     setIsProcessing(true);
@@ -250,8 +276,7 @@ export default function App() {
     setJob({ progress: 1, status: "Đang gửi video lên server..." });
 
     try {
-      const data = await uploadVideo({
-        file: videoFile,
+      const payload = {
         voice,
         rate: "+0%",
         language,
@@ -264,7 +289,14 @@ export default function App() {
         textBoxes,
         logo: logoFile,
         music: musicFile,
-      });
+      };
+      if (sourceVideoUrl?.trim()) {
+        payload.videoUrl = sourceVideoUrl.trim();
+      } else {
+        payload.file = videoFile;
+      }
+
+      const data = await uploadVideo(payload);
       if (!data?.job_id) throw new Error("Server không trả job_id");
       setJobId(data.job_id);
     } catch (err) {
@@ -373,6 +405,7 @@ export default function App() {
     if (!confirm("Đặt lại toàn bộ chỉnh sửa?")) return;
     if (videoUrl?.startsWith("blob:")) URL.revokeObjectURL(videoUrl);
     setVideoFile(null);
+    setSourceVideoUrl("");
     setVideoUrl("");
     setVideoFilename("");
     setLogoFile(null);
@@ -404,10 +437,34 @@ export default function App() {
           New Video Project
         </h1>
 
+        <div className="source-input-panel" style={{ marginBottom: 18 }}>
+          <label className="field-label" style={{ display: "block", marginBottom: 6 }}>
+            Video URL (Douyin/TikTok)
+          </label>
+          <input
+            type="url"
+            className="text-input"
+            value={sourceVideoUrl}
+            onChange={(e) => handleSourceVideoUrlChange(e.target.value)}
+            placeholder="Dán link Douyin/TikTok vào đây để backend tải video từ URL"
+            style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #cbd5e1" }}
+          />
+          {sourceVideoUrl && !isDirectVideoUrl(sourceVideoUrl) && (
+            <div style={{ marginTop: 8, fontSize: 13, color: "#f97316" }}>
+              Link này không phải file video trực tiếp, nên trình duyệt không phát preview gốc.
+              Backend vẫn sẽ tải video từ URL khi bạn nhấn "Lưu & Xuất video".
+            </div>
+          )}
+          <p style={{ marginTop: 8, fontSize: 13, color: "#64748b" }}>
+            Hoặc chạm vào vùng video bên trái để chọn file video trực tiếp.
+          </p>
+        </div>
+
         <div className="editor-grid">
           {/* Left column - Preview */}
           <PreviewArea
             videoUrl={videoUrl}
+            sourceVideoUrl={sourceVideoUrl}
             videoRef={videoRef}
             aspectRatio={aspectRatio}
             onMetadata={() => { }}
