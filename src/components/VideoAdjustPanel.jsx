@@ -180,8 +180,8 @@ export default function VideoAdjustPanel({
                     </div>
                 </div>
 
-                {/* Watermark VIP */}
-                <div className="subcard vip">
+                {/* Xóa chữ Trung */}
+                <div className="subcard">
                     <div className="row-between">
                         <span
                             className="label-strong"
@@ -189,22 +189,20 @@ export default function VideoAdjustPanel({
                         >
                             <Sparkles
                                 size={14}
-                                style={{ marginRight: 4, color: "#a16207" }}
+                                style={{ marginRight: 4, color: "#e11d48" }}
                             />
                             <span>
-                                Xóa
+                                Xóa chữ Trung
                                 <br />
-                                chữ/watermark
-                                <br />
-                                gốc bằng AI
-                                <span className="vip-tag">VIP</span>
+                                <span style={{ fontWeight: 400, fontSize: 12, color: "var(--muted)" }}>
+                                    watermark gốc
+                                </span>
                             </span>
                         </span>
                         <Toggle checked={removeWatermark} onChange={setRemoveWatermark} />
                     </div>
-                    <div className="vip-note">
-                        ⭐ Tính năng này chỉ dành cho <strong>VIP members</strong>. Nâng
-                        cấp tài khoản để sử dụng.
+                    <div style={{ fontSize: 11.5, color: "var(--muted)", marginTop: 6 }}>
+                        Bật để AI tự động xóa text tiếng Trung khỏi video
                     </div>
                 </div>
 

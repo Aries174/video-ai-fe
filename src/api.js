@@ -50,6 +50,7 @@ export async function uploadVideo({
     textBoxes,
     logo,
     music,
+    removeWatermark,
 } = {}) {
     const fd = new FormData();
     if (videoUrl) {
@@ -67,6 +68,7 @@ export async function uploadVideo({
     fd.append("zoomCrop", String(zoomCrop));
     fd.append("subtitleConfig", JSON.stringify(subtitleConfig ?? {}));
     fd.append("textBoxes", JSON.stringify(textBoxes ?? []));
+    fd.append("removeWatermark", String(!!removeWatermark));
     if (logo) fd.append("logo", logo);
     if (music) fd.append("music", music);
 

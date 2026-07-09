@@ -289,6 +289,7 @@ export default function App() {
         textBoxes,
         logo: logoFile,
         music: musicFile,
+        removeWatermark,
       };
       if (sourceVideoUrl?.trim()) {
         payload.videoUrl = sourceVideoUrl.trim();
@@ -344,7 +345,7 @@ export default function App() {
 
       const data = await renderFinal({
         video: videoFilename,
-        subtitles,
+        subtitles: subtitleConfig.enabled ? subtitles : [],
         subtitleConfig,
         textBoxes,
         images: logoMeta ? [logoMeta] : [],
@@ -528,6 +529,7 @@ export default function App() {
               hasSubtitles={subtitles.length > 0}
               onBurnSubtitles={handleBurnSubtitles}
               isBurning={isBurning}
+              subtitleEnabled={subtitleConfig.enabled}
               finalUrl={finalUrl}
               onSaveTemplate={handleSaveTemplate}
               onApplyTemplate={handleApplyTemplate}

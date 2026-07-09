@@ -30,6 +30,7 @@ export default function ExportPanel({
     hasSubtitles,
     onBurnSubtitles,
     isBurning,
+    subtitleEnabled = true,
     finalUrl,
     onSaveTemplate,
     onApplyTemplate,
@@ -102,24 +103,30 @@ export default function ExportPanel({
                             marginTop: 12,
                             marginBottom: 6,
                             fontSize: 12,
-                            color: "var(--muted)",
+                            color: subtitleEnabled ? "var(--muted)" : "#f97316",
                             textAlign: "center",
                         }}
                     >
-                        Kéo phụ đề trên video để chỉnh vị trí, sau đó bấm bên dưới
+                        {subtitleEnabled
+                            ? "Kéo phụ đề trên video để chỉnh vị trí, sau đó bấm bên dưới"
+                            : "⚠ Phụ đề đang TẮT — video sẽ xuất không có phụ đề"}
                     </p>
                     <button
                         className="btn btn-block"
                         style={{
-                            background: "#16a34a",
+                            background: subtitleEnabled ? "#16a34a" : "#475569",
                             color: "#fff",
-                            borderColor: "#16a34a",
+                            borderColor: subtitleEnabled ? "#16a34a" : "#475569",
                         }}
                         onClick={onBurnSubtitles}
                         disabled={isBurning || isProcessing}
                     >
                         <Film size={16} />
-                        {isBurning ? "Đang ghép phụ đề..." : "Ghép phụ đề vào video"}
+                        {isBurning
+                            ? "Đang ghép phụ đề..."
+                            : subtitleEnabled
+                                ? "Ghép phụ đề vào video"
+                                : "Xuất video (không phụ đề)"}
                     </button>
                 </>
             )}
